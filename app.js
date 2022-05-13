@@ -7,6 +7,8 @@ const port = 3000
 // setting template engine
 app.engine('handlebars', exphbs({ default: "main" }))
 app.set('view engine', 'handlebars')
+// setting static files
+app.use(express.static('public'))
 // setting the route and corresponding response
 app.get('/', (req, res) => {
   res.render('index')
