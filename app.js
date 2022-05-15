@@ -15,17 +15,30 @@ app.get('/', (req, res) => {
 })
 // dynamic routes with params ':restaurant_id'
 app.get('/restaurants/:restaurant_id', (req, res) => {
-  const restaurant = restaurantList.results.find(restaurant => restaurant.id.toString() === req.params.restaurant_id)
-  res.render('show', { restaurant: restaurant })
+  const restaurant = restaurantList.results.find(({ id }) => id.toString() === req.params.restaurant_id)
+  res.render('show', { restaurant })
 })
 // searching by query string
 app.get('/search', (req, res) => {
-  const { keyword } = req.query
-  const restaurants = restaurantList.results.filter(restaurant => {
-    return restaurant.name.toLowerCase().includes(keyword.toLowerCase())
+  const keyword = req.query.keyword.trim().toLowerCase()
+
+  if (!keyword) {
+    res.render('index', {
+      keyword,
+      needKeyword: true,
+    })
+    return
+  }
+
+  const restaurants = restaurantList.results.filter(({ name }) => {
+    return name.toLowerCase().includes(keyword)
   })
-  
-  res.render('index', { restaurants: restaurants, keyword: keyword })
+
+  res.render('index', {
+    restaurants,
+    keyword,
+    noMatch: !restaurants.length
+  })
 })
 app.listen(port, () => {
   console.log(`Express is listening on http://localhost:${port}`)
